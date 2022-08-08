@@ -1,4 +1,4 @@
-package com.slinet.dl4jtest2
+package com.slinet.federatedlearningclient
 
 import android.icu.text.DecimalFormat
 import android.os.Bundle
@@ -8,7 +8,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.slinet.dl4jtest2.databinding.ActivityMainBinding
+import com.slinet.federatedlearningclient.databinding.ActivityMainBinding
 import java.io.File
 
 

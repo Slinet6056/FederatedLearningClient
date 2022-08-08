@@ -1,4 +1,4 @@
-package com.slinet.dl4jtest2
+package com.slinet.federatedlearningclient
 
 import android.content.Context
 import android.util.Log

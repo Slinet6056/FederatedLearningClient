@@ -1,4 +1,4 @@
-package com.slinet.dl4jtest2
+package com.slinet.federatedlearningclient
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.slinet.dl4jtest2
+package com.slinet.federatedlearningclient
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
