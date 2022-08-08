@@ -47,7 +47,7 @@ class SocketClient(val context: Context) {
         }
     }
 
-    fun sendFile(file: File) {
+    fun sendFile(file: File, onSent: () -> Unit = {}) {
         if (socket == null) {
             Log.d("SocketClient", "Server not connected")
             return
@@ -73,6 +73,7 @@ class SocketClient(val context: Context) {
             } catch (e: Exception) {
                 Log.d("SocketClient", e.message.toString())
             }
+            onSent.invoke()
         }
 
     }

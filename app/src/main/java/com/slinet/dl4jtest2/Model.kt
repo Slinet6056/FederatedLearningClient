@@ -93,7 +93,7 @@ object Model {
             myNetwork = MultiLayerNetwork(listBuilder.build())
             myNetwork!!.init()
 
-            Log.d("Status", "Model created")
+            Log.d("Model", "Model created")
             onCreated.invoke()
         }
     }
@@ -102,12 +102,12 @@ object Model {
         if (!isCreated()) return
         progressBar.progress = 0
         thread {
-            Log.d("Status", "Start training")
+            Log.d("Model", "Start training")
             for (i in 0 until epoch) {
                 myNetwork!!.fit(myData)
                 Handler(Looper.getMainLooper()).post { progressBar.progress = (i + 1) * 1000 / epoch }
             }
-            Log.d("Status", "Finish training")
+            Log.d("Model", "Finish training")
             onFinished.invoke()
         }
     }
@@ -120,7 +120,7 @@ object Model {
         actualInput.putScalar(intArrayOf(0, 2), sl)
         actualInput.putScalar(intArrayOf(0, 3), sw)
         val actualOutput = myNetwork!!.output(actualInput)
-        Log.d("Status", "Inferred")
+        Log.d("Model", "Inferred")
         return actualOutput.toDoubleVector()
     }
 

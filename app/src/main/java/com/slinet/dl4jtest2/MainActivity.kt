@@ -3,6 +3,7 @@ package com.slinet.dl4jtest2
 import android.icu.text.DecimalFormat
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -12,12 +13,18 @@ import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
+    lateinit var binding: ActivityMainBinding
+    lateinit var socketClient: SocketClient
+    private var autoMode = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val socketClient = SocketClient(this)
+        this.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        socketClient = SocketClient(this)
         socketClient.connectServer("192.168.0.101", 12345)
 
         binding.trainButton.setOnClickListener {
@@ -67,6 +74,46 @@ class MainActivity : AppCompatActivity() {
 
         binding.loadButton.setOnClickListener {
             Model.load(this)
+        }
+
+        binding.autoModeButton.setOnClickListener {
+            if (!autoMode) {
+                autoMode = true
+                binding.autoModeButton.text = "关闭自动训练"
+                if (!Model.isCreated()) {
+                    Model.create {
+                        FederatedLearningThread().start()
+                    }
+                } else {
+                    FederatedLearningThread().start()
+                }
+            } else {
+                autoMode = false
+                binding.autoModeButton.text = "开启自动训练"
+            }
+        }
+    }
+
+    inner class FederatedLearningThread : Thread() {
+        override fun run() {
+            runOnUiThread { Toast.makeText(this@MainActivity, "开始自动训练", Toast.LENGTH_SHORT).show() }
+            var blocked = false
+            while (autoMode) {
+                blocked = true
+                Model.train(100, binding.progressBar) {
+                    Model.save(this@MainActivity) {
+                        socketClient.sendFile(File(this@MainActivity.filesDir, "trained_model.zip")) {
+                            sleep(3000)
+                            Model.load(this@MainActivity)
+                            blocked = false
+                        }
+                    }
+                }
+                while (blocked) {
+                    sleep(1000)
+                }
+            }
+            runOnUiThread { Toast.makeText(this@MainActivity, "结束自动训练", Toast.LENGTH_SHORT).show() }
         }
     }
 }
