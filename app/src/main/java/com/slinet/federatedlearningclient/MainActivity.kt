@@ -25,7 +25,26 @@ class MainActivity : AppCompatActivity() {
         this.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         socketClient = SocketClient(this)
-        socketClient.connectServer("192.168.0.101", 12345)
+        val inflater = LayoutInflater.from(this)
+        val layout = inflater.inflate(R.layout.connect_server, findViewById(android.R.id.content), false)
+        val serverIpEditText: EditText = layout.findViewById(R.id.serverIpEditText)
+        val serverPortEditText: EditText = layout.findViewById(R.id.serverPortEditText)
+        AlertDialog.Builder(this).apply {
+            setView(layout)
+            setPositiveButton("开启") { _, _ ->
+                val serverIp = serverIpEditText.text.toString()
+                val serverPort = serverPortEditText.text.toString()
+                //TODO: Check IP address
+                if (serverPort.length !in 1..5 || serverPort.toInt() !in 1..65535) {
+                    Toast.makeText(this@MainActivity, "请输入正确的端口号", Toast.LENGTH_SHORT).show()
+                } else {
+                    socketClient.connectServer(serverIp, serverPort.toInt())
+                }
+            }
+            setNegativeButton("取消", null)
+            setCancelable(false)
+            show()
+        }
 
         binding.trainButton.setOnClickListener {
             if (!Model.isCreated()) {
@@ -90,6 +109,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 autoMode = false
                 binding.autoModeButton.text = "开启自动训练"
+                Toast.makeText(this, "正在停止自动训练", Toast.LENGTH_SHORT).show()
             }
         }
     }
