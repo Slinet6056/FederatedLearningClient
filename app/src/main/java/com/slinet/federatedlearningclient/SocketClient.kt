@@ -35,6 +35,7 @@ class SocketClient(val context: Context) {
                     try {
                         val json = JSONObject(stringData)
                         when (json.getInt("statusCode")) {
+                            0 -> checkConnection()
                             1 -> receiveFile()
                         }
                     } catch (e: Exception) {
@@ -94,6 +95,17 @@ class SocketClient(val context: Context) {
                 inputStream.close()
                 transferSocket.close()
                 Log.d("SocketClient", "File received")
+            } catch (e: Exception) {
+                Log.d("SocketClient", e.message.toString())
+            }
+        }
+    }
+
+    private fun checkConnection() {
+        thread {
+            try {
+                output!!.println("""{"statusCode":0}""")
+                Log.d("SocketClient", "Connection checked")
             } catch (e: Exception) {
                 Log.d("SocketClient", e.message.toString())
             }
