@@ -7,6 +7,7 @@ import java.io.*
 import java.net.Socket
 import kotlin.concurrent.thread
 
+
 class SocketClient(val context: Context) {
     private var ipAddress: String = ""
     private var port: Int = 0
@@ -104,7 +105,9 @@ class SocketClient(val context: Context) {
     private fun checkConnection() {
         thread {
             try {
-                output!!.println("""{"statusCode":0}""")
+                val deviceName = android.os.Build.DEVICE
+                val deviceModel = android.os.Build.MODEL
+                output!!.println("""{"statusCode":0,"deviceName":"$deviceName","deviceModel":"$deviceModel"}""")
                 Log.d("SocketClient", "Connection checked")
             } catch (e: Exception) {
                 Log.d("SocketClient", e.message.toString())

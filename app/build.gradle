@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.slinet.dl4jtest2"
         minSdk 29
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -30,13 +30,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     packagingOptions {
-        exclude 'META-INF/native-image/**/**.json'
-        exclude 'META-INF/native-image/*.json'
-        pickFirst 'nd4j-native.properties'
+        resources {
+            excludes += ['META-INF/native-image/**/**.json', 'META-INF/native-image/*.json']
+            pickFirsts += ['nd4j-native.properties']
+        }
     }
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'com.slinet.federatedlearningclient'
 }
 
 configurations {
@@ -62,8 +64,8 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
