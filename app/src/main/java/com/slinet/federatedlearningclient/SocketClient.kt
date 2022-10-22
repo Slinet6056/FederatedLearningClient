@@ -28,6 +28,7 @@ class SocketClient(val context: Context) {
                 output = PrintWriter(OutputStreamWriter(socket!!.getOutputStream(), "UTF-8"), true)
                 running = true
                 Log.d("SocketClient", "Server connected")
+                checkConnection()
                 val input = BufferedReader(InputStreamReader(socket!!.getInputStream()))
                 var stringData: String?
                 while (running) {
@@ -106,8 +107,8 @@ class SocketClient(val context: Context) {
         thread {
             try {
                 val deviceName = android.os.Build.DEVICE
-                val deviceModel = android.os.Build.MODEL
-                output!!.println("""{"statusCode":0,"deviceName":"$deviceName","deviceModel":"$deviceModel"}""")
+                val deviceFingerprint = android.os.Build.FINGERPRINT
+                output!!.println("""{"statusCode":0,"deviceName":"$deviceName","deviceFingerprint":"$deviceFingerprint"}""")
                 Log.d("SocketClient", "Connection checked")
             } catch (e: Exception) {
                 Log.d("SocketClient", e.message.toString())
