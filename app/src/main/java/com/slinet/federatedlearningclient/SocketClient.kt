@@ -8,7 +8,7 @@ import java.net.Socket
 import kotlin.concurrent.thread
 
 
-class SocketClient(val context: Context) {
+class SocketClient(private val context: Context) {
     private var ipAddress: String = ""
     private var port: Int = 0
     private var socket: Socket? = null
@@ -50,14 +50,16 @@ class SocketClient(val context: Context) {
         }
     }
 
-    fun sendFile(file: File, onSent: () -> Unit = {}) {
+    fun sendFile(file: File, trainingDuration: Double, onSent: () -> Unit = {}) {
         if (socket == null) {
             Log.d("SocketClient", "Server not connected")
             return
         }
         thread {
             try {
-                output!!.println("""{"statusCode":1}""")
+                val deviceName = android.os.Build.DEVICE
+                val deviceFingerprint = android.os.Build.FINGERPRINT
+                output!!.println("""{"statusCode":1,"trainingDuration":$trainingDuration,"deviceName":"$deviceName","deviceFingerprint":"$deviceFingerprint"}""")
                 Thread.sleep(500)
 
                 val transferSocket = Socket(ipAddress, port)

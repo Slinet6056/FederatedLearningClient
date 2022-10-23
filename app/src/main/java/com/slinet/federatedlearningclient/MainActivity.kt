@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.slinet.federatedlearningclient.databinding.ActivityMainBinding
 import java.io.File
+import java.time.Instant
 
 
 class MainActivity : AppCompatActivity() {
@@ -55,11 +56,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            val inflater = LayoutInflater.from(this)
-            val layout = inflater.inflate(R.layout.set_epoch, findViewById(android.R.id.content), false)
-            val epochEditText: EditText = layout.findViewById(R.id.epochEditText)
+            val layoutInflater = LayoutInflater.from(this)
+            val connectionLayout = layoutInflater.inflate(R.layout.set_epoch, findViewById(android.R.id.content), false)
+            val epochEditText: EditText = connectionLayout.findViewById(R.id.epochEditText)
             AlertDialog.Builder(this).apply {
-                setView(layout)
+                setView(connectionLayout)
                 setPositiveButton("确定") { _, _ ->
                     Model.train(epochEditText.text.toString().toInt(), binding.progressBar) {
                         runOnUiThread {
@@ -87,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.saveButton.setOnClickListener {
             Model.save(this) {
-                socketClient.sendFile(File(this.filesDir, "trained_model.zip"))
+                socketClient.sendFile(File(this.filesDir, "trained_model.zip"), -1.0)
             }
         }
 
@@ -117,12 +118,14 @@ class MainActivity : AppCompatActivity() {
     inner class FederatedLearningThread : Thread() {
         override fun run() {
             runOnUiThread { Toast.makeText(this@MainActivity, "开始自动训练", Toast.LENGTH_SHORT).show() }
-            var blocked = false
+            var blocked: Boolean
             while (autoMode) {
                 blocked = true
+                val startTime = Instant.now().toEpochMilli() / 1000.0
                 Model.train(100, binding.progressBar) {
+                    val endTime = Instant.now().toEpochMilli() / 1000.0
                     Model.save(this@MainActivity) {
-                        socketClient.sendFile(File(this@MainActivity.filesDir, "trained_model.zip")) {
+                        socketClient.sendFile(File(this@MainActivity.filesDir, "trained_model.zip"), endTime - startTime) {
                             sleep(3000)
                             Model.load(this@MainActivity)
                             blocked = false
