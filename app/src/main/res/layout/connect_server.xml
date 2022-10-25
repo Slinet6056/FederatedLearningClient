@@ -28,7 +28,7 @@
             android:hint="IP地址"
             android:inputType="text"
             android:selectAllOnFocus="true"
-            android:text="124.223.11.135"
+            android:text="192.168.50.240"
             android:textSize="18sp" />
 
         <TextView

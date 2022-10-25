@@ -47,55 +47,6 @@ class MainActivity : AppCompatActivity() {
             show()
         }
 
-        binding.trainButton.setOnClickListener {
-            if (!Model.isCreated()) {
-                Model.create {
-                    runOnUiThread {
-                        Toast.makeText(this, "模型已建立", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-
-            val layoutInflater = LayoutInflater.from(this)
-            val connectionLayout = layoutInflater.inflate(R.layout.set_epoch, findViewById(android.R.id.content), false)
-            val epochEditText: EditText = connectionLayout.findViewById(R.id.epochEditText)
-            AlertDialog.Builder(this).apply {
-                setView(connectionLayout)
-                setPositiveButton("确定") { _, _ ->
-                    Model.train(epochEditText.text.toString().toInt(), binding.progressBar) {
-                        runOnUiThread {
-                            Toast.makeText(this@MainActivity, "训练结束", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-                setNegativeButton("取消", null)
-                setCancelable(true)
-                show()
-            }
-        }
-
-        binding.inferButton.setOnClickListener {
-            val pl = binding.petalLength.text.toString().toDouble()
-            val pw = binding.petalWidth.text.toString().toDouble()
-            val sl = binding.sepalLength.text.toString().toDouble()
-            val sw = binding.sepalWidth.text.toString().toDouble()
-            val output = Model.infer(pl, pw, sl, sw)
-            val df2 = DecimalFormat("#.##")
-            binding.setosa.text = df2.format(output[0]).toString()
-            binding.versicolor.text = df2.format(output[1]).toString()
-            binding.virginica.text = df2.format(output[2]).toString()
-        }
-
-        binding.saveButton.setOnClickListener {
-            Model.save(this) {
-                socketClient.sendFile(File(this.filesDir, "trained_model.zip"), -1.0)
-            }
-        }
-
-        binding.loadButton.setOnClickListener {
-            Model.load(this)
-        }
-
         binding.autoModeButton.setOnClickListener {
             if (!autoMode) {
                 autoMode = true
