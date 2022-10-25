@@ -1,13 +1,16 @@
 package com.slinet.federatedlearningclient
 
-import android.icu.text.DecimalFormat
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.WindowManager
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import com.google.android.material.snackbar.Snackbar
+import com.slinet.federatedlearningclient.Utils.displaySnackBar
 import com.slinet.federatedlearningclient.databinding.ActivityMainBinding
 import java.io.File
 import java.time.Instant
@@ -19,9 +22,13 @@ class MainActivity : AppCompatActivity() {
     private var autoMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar)
 
         this.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
@@ -37,12 +44,11 @@ class MainActivity : AppCompatActivity() {
                 val serverPort = serverPortEditText.text.toString()
                 //TODO: Check IP address
                 if (serverPort.length !in 1..5 || serverPort.toInt() !in 1..65535) {
-                    Toast.makeText(this@MainActivity, "请输入正确的端口号", Toast.LENGTH_SHORT).show()
+                    displaySnackBar(Snackbar.make(binding.root, "请输入正确的端口号", Snackbar.LENGTH_SHORT))
                 } else {
                     socketClient.connectServer(serverIp, serverPort.toInt())
                 }
             }
-            setNegativeButton("取消", null)
             setCancelable(false)
             show()
         }
@@ -60,15 +66,36 @@ class MainActivity : AppCompatActivity() {
                 }
             } else {
                 autoMode = false
-                binding.autoModeButton.text = "开启自动训练"
-                Toast.makeText(this, "正在停止自动训练", Toast.LENGTH_SHORT).show()
+                binding.autoModeButton.text = "正在停止训练"
             }
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        return when (item.itemId) {
+            R.id.action_info -> {
+                displaySnackBar(Snackbar.make(binding.root, "点这没用", Snackbar.LENGTH_SHORT))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+
     inner class FederatedLearningThread : Thread() {
         override fun run() {
-            runOnUiThread { Toast.makeText(this@MainActivity, "开始自动训练", Toast.LENGTH_SHORT).show() }
+            runOnUiThread {
+                displaySnackBar(Snackbar.make(binding.root, "开始自动训练", Snackbar.LENGTH_SHORT))
+            }
             var blocked: Boolean
             while (autoMode) {
                 blocked = true
@@ -87,7 +114,11 @@ class MainActivity : AppCompatActivity() {
                     sleep(1000)
                 }
             }
-            runOnUiThread { Toast.makeText(this@MainActivity, "结束自动训练", Toast.LENGTH_SHORT).show() }
+            runOnUiThread {
+                binding.autoModeButton.text = "开启自动训练"
+                binding.progressBar.progress = 0
+                displaySnackBar(Snackbar.make(binding.root, "结束自动训练", Snackbar.LENGTH_SHORT))
+            }
         }
     }
 }
