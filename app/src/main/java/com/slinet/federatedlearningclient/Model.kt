@@ -5,7 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.ProgressBar
-import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
+import com.slinet.federatedlearningclient.Utils.displaySnackBar
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.layers.DenseLayer
 import org.deeplearning4j.nn.conf.layers.OutputLayer
@@ -100,12 +101,16 @@ object Model {
 
     fun train(epoch: Int, progressBar: ProgressBar, onFinished: () -> Unit) {
         if (!isCreated()) return
-        progressBar.progress = 0
+        Handler(Looper.getMainLooper()).post {
+            progressBar.progress = 0
+        }
         thread {
             Log.d("Model", "Start training")
             for (i in 0 until epoch) {
                 myNetwork!!.fit(myData)
-                Handler(Looper.getMainLooper()).post { progressBar.progress = (i + 1) * 1000 / epoch }
+                Handler(Looper.getMainLooper()).post {
+                    progressBar.progress = (i + 1) * 1000 / epoch
+                }
             }
             Log.d("Model", "Finish training")
             onFinished.invoke()
@@ -132,12 +137,12 @@ object Model {
                 val outputStream = FileOutputStream(file)
                 ModelSerializer.writeModel(myNetwork!!, outputStream, true)
                 Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(context, "模型已保存", Toast.LENGTH_SHORT).show()
+                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.mainLayout), "模型已保存", Snackbar.LENGTH_SHORT))
                 }
             } catch (e: Exception) {
                 Log.e("Save model error", e.message.toString())
                 Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(context, "模型保存失败", Toast.LENGTH_SHORT).show()
+                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.mainLayout), "模型保存失败", Snackbar.LENGTH_SHORT))
                 }
             }
             onFinished.invoke()
@@ -150,12 +155,12 @@ object Model {
                 val file = File(context.filesDir, "received_model.zip")
                 myNetwork = ModelSerializer.restoreMultiLayerNetwork(file)
                 Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(context, "模型已加载", Toast.LENGTH_SHORT).show()
+                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.mainLayout), "模型已加载", Snackbar.LENGTH_SHORT))
                 }
             } catch (e: Exception) {
                 Log.e("Load model error", e.message.toString())
                 Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(context, "模型加载失败", Toast.LENGTH_SHORT).show()
+                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.mainLayout), "模型加载失败", Snackbar.LENGTH_SHORT))
                 }
             }
         }
