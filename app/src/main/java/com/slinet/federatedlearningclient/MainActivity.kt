@@ -1,5 +1,6 @@
 package com.slinet.federatedlearningclient
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -9,11 +10,16 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.google.android.material.snackbar.Snackbar
 import com.slinet.federatedlearningclient.Utils.displaySnackBar
 import com.slinet.federatedlearningclient.databinding.ActivityMainBinding
 import java.io.File
 import java.time.Instant
+import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,8 +41,8 @@ class MainActivity : AppCompatActivity() {
         socketClient = SocketClient(this)
         val inflater = LayoutInflater.from(this)
         val layout = inflater.inflate(R.layout.connect_server, findViewById(android.R.id.content), false)
-        val serverIpEditText: EditText = layout.findViewById(R.id.serverIpEditText)
-        val serverPortEditText: EditText = layout.findViewById(R.id.serverPortEditText)
+        val serverIpEditText: EditText = layout.findViewById(R.id.server_ip_editText)
+        val serverPortEditText: EditText = layout.findViewById(R.id.server_port_editText)
         AlertDialog.Builder(this).apply {
             setView(layout)
             setPositiveButton("开启") { _, _ ->
@@ -90,7 +96,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     inner class FederatedLearningThread : Thread() {
         override fun run() {
             runOnUiThread {
@@ -100,8 +105,13 @@ class MainActivity : AppCompatActivity() {
             while (autoMode) {
                 blocked = true
                 val startTime = Instant.now().toEpochMilli() / 1000.0
-                Model.train(100, binding.progressBar) {
+                Model.train(100, binding.content.progressBar) {
                     val endTime = Instant.now().toEpochMilli() / 1000.0
+                    runOnUiThread {
+                        TrainingInfo.finishTraining(endTime - startTime)
+                        updateTrainingInfo()
+                        showLossChart()
+                    }
                     Model.save(this@MainActivity) {
                         socketClient.sendFile(File(this@MainActivity.filesDir, "trained_model.zip"), endTime - startTime) {
                             sleep(3000)
@@ -116,9 +126,58 @@ class MainActivity : AppCompatActivity() {
             }
             runOnUiThread {
                 binding.autoModeButton.text = "开启自动训练"
-                binding.progressBar.progress = 0
+                binding.content.progressBar.progress = 0
                 displaySnackBar(Snackbar.make(binding.root, "结束自动训练", Snackbar.LENGTH_SHORT))
             }
         }
+    }
+
+    private fun updateTrainingInfo() {
+        binding.content.trainingTimes.text = TrainingInfo.trainingTimes.toString()
+        binding.content.averageDuration.text = ((TrainingInfo.averageDuration * 100.0).roundToInt() / 100.0).toString()
+        binding.content.totalDuration.text = ((TrainingInfo.totalDuration * 100.0).roundToInt() / 100.0).toString()
+    }
+
+    private fun showLossChart() {
+        val entries = ArrayList<Entry>()
+        TrainingInfo.losses.forEachIndexed { index, loss ->
+            entries.add(Entry((index + 1).toFloat(), loss.toFloat()))
+        }
+
+        val dataSet = LineDataSet(entries, "Loss")
+        val lineData = LineData(dataSet)
+        val chart: LineChart = binding.content.lossChart
+        chart.data = lineData
+        dataSet.setDrawValues(false)
+        chart.description.isEnabled = false
+        chart.isClickable = false
+        chart.isDragEnabled = false
+        chart.isHighlightPerTapEnabled = false
+        chart.isHighlightPerDragEnabled = false
+        chart.isScaleXEnabled = false
+        chart.isScaleYEnabled = false
+        chart.isDoubleTapToZoomEnabled = false
+        chart.xAxis.isEnabled = false
+        chart.legend.isEnabled = false
+        var textColor = 0
+        var lineColor = 0
+        when (this.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                textColor = -3488560
+                lineColor = -1319425
+            }
+            Configuration.UI_MODE_NIGHT_NO -> {
+                textColor = -12040880
+                lineColor = -14614435
+            }
+        }
+        dataSet.color = lineColor
+        dataSet.valueTextColor = textColor
+        dataSet.setCircleColor(lineColor)
+        chart.xAxis.textColor = textColor
+        chart.axisLeft.textColor = textColor
+        chart.axisRight.textColor = textColor
+
+        chart.invalidate()
     }
 }

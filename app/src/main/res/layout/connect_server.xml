@@ -21,7 +21,7 @@
         android:fitsSystemWindows="true">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/serverIpEditText"
+            android:id="@+id/server_ip_editText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -40,7 +40,7 @@
             android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/serverPortEditText"
+            android:id="@+id/server_port_editText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.618"

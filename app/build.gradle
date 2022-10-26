@@ -10,8 +10,8 @@ android {
         applicationId "com.slinet.dl4jtest2"
         minSdk 29
         targetSdk 33
-        versionCode 2
-        versionName "2.0"
+        versionCode 3
+        versionName "2.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -73,6 +73,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     implementation(group: 'org.deeplearning4j', name: 'deeplearning4j-core', version: dl4jVersion) {
         exclude group: 'org.bytedeco', module: 'opencv-platform'
