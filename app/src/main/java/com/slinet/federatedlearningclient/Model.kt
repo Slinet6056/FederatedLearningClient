@@ -112,6 +112,7 @@ object Model {
                     progressBar.progress = (i + 1) * 1000 / epoch
                 }
             }
+            TrainingInfo.losses.add(myNetwork!!.score())
             Log.d("Model", "Finish training")
             onFinished.invoke()
         }
@@ -137,12 +138,12 @@ object Model {
                 val outputStream = FileOutputStream(file)
                 ModelSerializer.writeModel(myNetwork!!, outputStream, true)
                 Handler(Looper.getMainLooper()).post {
-                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.mainLayout), "模型已保存", Snackbar.LENGTH_SHORT))
+                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.main_layout), "模型已保存", Snackbar.LENGTH_SHORT))
                 }
             } catch (e: Exception) {
                 Log.e("Save model error", e.message.toString())
                 Handler(Looper.getMainLooper()).post {
-                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.mainLayout), "模型保存失败", Snackbar.LENGTH_SHORT))
+                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.main_layout), "模型保存失败", Snackbar.LENGTH_SHORT))
                 }
             }
             onFinished.invoke()
@@ -155,12 +156,12 @@ object Model {
                 val file = File(context.filesDir, "received_model.zip")
                 myNetwork = ModelSerializer.restoreMultiLayerNetwork(file)
                 Handler(Looper.getMainLooper()).post {
-                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.mainLayout), "模型已加载", Snackbar.LENGTH_SHORT))
+                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.main_layout), "模型已加载", Snackbar.LENGTH_SHORT))
                 }
             } catch (e: Exception) {
                 Log.e("Load model error", e.message.toString())
                 Handler(Looper.getMainLooper()).post {
-                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.mainLayout), "模型加载失败", Snackbar.LENGTH_SHORT))
+                    displaySnackBar(Snackbar.make((context as MainActivity).findViewById(R.id.main_layout), "模型加载失败", Snackbar.LENGTH_SHORT))
                 }
             }
         }

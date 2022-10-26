@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:max="1000"
+        android:scaleY="1" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/training_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="48dp">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="当前训练次数" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/training_times"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:autoSizeTextType="uniform"
+                android:gravity="center"
+                android:text="0" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="平均训练时长" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/average_duration"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:autoSizeTextType="uniform"
+                android:gravity="center"
+                android:text="0" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="总训练时长" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/total_duration"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:autoSizeTextType="uniform"
+                android:gravity="center"
+                android:text="0" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/loss_chart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="150dp" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>
