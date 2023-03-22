@@ -17,4 +17,20 @@ object Utils {
         snackBarView.layoutParams = params
         snackbar.show()
     }
+
+    fun readTrainingData(str: String) {
+        var strArray = str.split("#").toTypedArray()[0].split(",").toTypedArray()
+        var doubleArray = DoubleArray(strArray.size)
+        for (i in strArray.indices) {
+            doubleArray[i] = strArray[i].toDouble()
+        }
+        TrainingData.irisData = doubleArray
+
+        strArray = str.split("#").toTypedArray()[1].split(",").toTypedArray()
+        doubleArray = DoubleArray(strArray.size)
+        for (i in strArray.indices) {
+            doubleArray[i] = strArray[i].toDouble()
+        }
+        TrainingData.labelData = doubleArray
+    }
 }

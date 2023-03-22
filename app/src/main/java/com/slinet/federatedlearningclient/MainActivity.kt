@@ -1,5 +1,6 @@
 package com.slinet.federatedlearningclient
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -53,6 +54,9 @@ class MainActivity : AppCompatActivity() {
                     displaySnackBar(Snackbar.make(binding.root, "请输入正确的端口号", Snackbar.LENGTH_SHORT))
                 } else {
                     socketClient.connectServer(serverIp, serverPort.toInt())
+                    val intent = Intent(Intent.ACTION_GET_CONTENT)
+                    intent.type = "text/plain"
+                    startActivityForResult(intent, 1)
                 }
             }
             setCancelable(false)
@@ -77,6 +81,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            1 -> {
+                if (resultCode == RESULT_OK) {
+                    data?.data?.let { uri ->
+                        val inputStream = contentResolver.openInputStream(uri)
+                        val fileContent = inputStream?.bufferedReader().use { it?.readText() }
+                        if (fileContent != null) {
+                            Utils.readTrainingData(fileContent)
+                            displaySnackBar(Snackbar.make(binding.root, "读取数据成功", Snackbar.LENGTH_SHORT))
+                        }
+                        inputStream?.close()
+                    }
+                }
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -88,6 +111,12 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
+            R.id.open_data -> {
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "text/plain"
+                startActivityForResult(intent, 1)
+                true
+            }
             R.id.action_info -> {
                 displaySnackBar(Snackbar.make(binding.root, "点这没用", Snackbar.LENGTH_SHORT))
                 true

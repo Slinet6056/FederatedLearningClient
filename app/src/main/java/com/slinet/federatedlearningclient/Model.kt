@@ -30,7 +30,7 @@ object Model {
 
     init {
         thread {
-            val row = 150
+            val row = TrainingData.irisData.size / 4
             val col = 4
             val irisMatrix = Array(row) { DoubleArray(col) }
             var i = 0
@@ -40,7 +40,7 @@ object Model {
                 }
             }
 
-            val rowLabel = 150
+            val rowLabel = TrainingData.labelData.size / 3
             val colLabel = 3
             val twodimLabel = Array(rowLabel) { DoubleArray(colLabel) }
             i = 0

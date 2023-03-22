@@ -2,6 +2,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.slinet.federatedlearningclient.MainActivity">
+
+    <item
+        android:id="@+id/open_data"
+        android:orderInCategory="100"
+        android:title="读取数据"
+        app:showAsAction="never" />
+
     <item
         android:id="@+id/action_info"
         android:orderInCategory="100"
