@@ -37,8 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
+        //保持屏幕常亮
         this.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+        //显示弹窗要求输入服务器IP和端口号，开启连接
         socketClient = SocketClient(this)
         val inflater = LayoutInflater.from(this)
         val layout = inflater.inflate(R.layout.connect_server, findViewById(android.R.id.content), false)
@@ -54,6 +56,8 @@ class MainActivity : AppCompatActivity() {
                     displaySnackBar(Snackbar.make(binding.root, "请输入正确的端口号", Snackbar.LENGTH_SHORT))
                 } else {
                     socketClient.connectServer(serverIp, serverPort.toInt())
+
+                    //启动文件选择器，读取训练数据
                     val intent = Intent(Intent.ACTION_GET_CONTENT)
                     intent.type = "text/plain"
                     startActivityForResult(intent, 1)
@@ -63,6 +67,7 @@ class MainActivity : AppCompatActivity() {
             show()
         }
 
+        //界面右下角的按钮，点击开关自动训练
         binding.autoModeButton.setOnClickListener {
             if (!autoMode) {
                 autoMode = true
@@ -85,6 +90,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             1 -> {
+                //读取训练数据
                 if (resultCode == RESULT_OK) {
                     data?.data?.let { uri ->
                         val inputStream = contentResolver.openInputStream(uri)
@@ -106,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    //处理界面右上角的菜单按钮点击事件
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -125,6 +132,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //模型训练部分
     inner class FederatedLearningThread : Thread() {
         override fun run() {
             runOnUiThread {
@@ -161,12 +169,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //更新训练信息显示
     private fun updateTrainingInfo() {
         binding.content.trainingTimes.text = TrainingInfo.trainingTimes.toString()
         binding.content.averageDuration.text = ((TrainingInfo.averageDuration * 100.0).roundToInt() / 100.0).toString()
         binding.content.totalDuration.text = ((TrainingInfo.totalDuration * 100.0).roundToInt() / 100.0).toString()
     }
 
+    //更新损失函数图表
     private fun showLossChart() {
         val entries = ArrayList<Entry>()
         TrainingInfo.losses.forEachIndexed { index, loss ->

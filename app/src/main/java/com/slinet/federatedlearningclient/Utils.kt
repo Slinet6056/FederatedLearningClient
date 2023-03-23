@@ -5,6 +5,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.snackbar.Snackbar
 
 object Utils {
+    //用于显示界面底部提示框的函数
     fun displaySnackBar(snackbar: Snackbar, sideMargin: Int = 24, marginBottom: Int = 20) {
         val snackBarView: View = snackbar.view
         val params = snackBarView.layoutParams as CoordinatorLayout.LayoutParams
@@ -18,6 +19,7 @@ object Utils {
         snackbar.show()
     }
 
+    //将从文件读取的训练数据赋值给TrainingData.irisData和TrainingData.labelData
     fun readTrainingData(str: String) {
         var strArray = str.split("#").toTypedArray()[0].split(",").toTypedArray()
         var doubleArray = DoubleArray(strArray.size)

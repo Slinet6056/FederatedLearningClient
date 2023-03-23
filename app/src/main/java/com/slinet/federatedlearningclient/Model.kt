@@ -28,6 +28,7 @@ object Model {
     private lateinit var trainingOut: INDArray
     private lateinit var myData: DataSet
 
+    //训练数据的初始化
     init {
         thread {
             val row = TrainingData.irisData.size / 4
@@ -56,6 +57,7 @@ object Model {
         }
     }
 
+    //创建模型
     fun create(onCreated: () -> Unit) {
         thread {
             //输入层
@@ -99,6 +101,7 @@ object Model {
         }
     }
 
+    //训练模型
     fun train(epoch: Int, progressBar: ProgressBar, onFinished: () -> Unit) {
         if (!isCreated()) return
         Handler(Looper.getMainLooper()).post {
@@ -118,6 +121,7 @@ object Model {
         }
     }
 
+    //使用模型判断输入数据的类别（没用到）
     fun infer(pl: Double = 0.0, pw: Double = 0.0, sl: Double = 0.0, sw: Double = 0.0): DoubleArray {
         if (!isCreated()) return DoubleArray(3)
         val actualInput = Nd4j.zeros(1, 4)
@@ -130,6 +134,7 @@ object Model {
         return actualOutput.toDoubleVector()
     }
 
+    //将训练后的模型保存到本地
     fun save(context: Context, onFinished: () -> Unit) {
         if (!isCreated()) return
         thread {
@@ -150,6 +155,7 @@ object Model {
         }
     }
 
+    //从本地加载模型
     fun load(context: Context) {
         thread {
             try {
@@ -167,5 +173,6 @@ object Model {
         }
     }
 
+    //判断模型是否已创建
     fun isCreated() = myNetwork != null
 }
